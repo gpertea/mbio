@@ -4,7 +4,8 @@ var flist;
 var lidirs;
 var lisel;
 var pre;
-//list of running samples (to be populated by loadFList and perhaps shown at the top of the page?)
+var selSample={}; // .dir=selected dir .file=select file name, .pair=paired file name .fstatus=running status
+//list of samples running on server (to be populated by loadFList and perhaps shown at the top of the page?)
 var srunning=[]; 
 
 //-- called by window.onLoad() ---//
@@ -26,6 +27,7 @@ function loadFList() {
   //flist is set from the beginning
   lidirs=populateFlist(ftxt); //parse file list from ftxt
   //now update the element properties
+  /*
   for (var i = 0; i < lidirs.length; i++) {
     var labels=lidirs[i].getElementsByTagName("label");
     //assign a handler to all labels
@@ -49,6 +51,7 @@ function loadFList() {
       }
     }
   }
+  */
 }
 
 function populateFlist(txt) {
@@ -62,19 +65,23 @@ function populateFlist(txt) {
   // ...
   var tlines=txt.split('\n');
   var dli;
-  var dname;
+  var dlabel;
+  var dir;
   var dul;
   for (var l=0;l<tlines.length;l++) {
     if (tlines[l].charAt(0)=='>') {
        //directories
        dli=document.createElement("LI");
-       dname=document.createElement("LABEL");
-       dname.appendChild(document.createTextNode(tlines[l].substr(1)));
-       dli.appendChild(dname);
+       dlabel=document.createElement("LABEL");
+       dir=tlines[l].substr(1);
+       dlabel.appendChild(document.createTextNode(dir));
+       dli.appendChild(dlabel);
        flist.appendChild(dli);
        dirs.push(dli);
        dul=document.createElement("UL");
        dli.appendChild(dul);
+       dlabel.addEventListener("click", folderClick);
+       dlabel.targetLst=dul;
      } else {
        //files:
        var fdata=tlines[l].split('\t');
@@ -83,6 +90,10 @@ function populateFlist(txt) {
        var fli=document.createElement("LI");
        fli.appendChild(document.createTextNode(fdata[0]));
        dul.appendChild(fli);
+       fli.myDir=dir;
+       fli.myDirlabel=dlabel;
+       fli.addEventListener("click", fileClick);
+       fli.fstatus=fstatus;
        if (fstatus) {
           if (fstatus=='!') {
              fli.style.backgroundImage='url("/mbio/css/img/st_err.png")';
@@ -121,6 +132,9 @@ function fileClick() {
     this.className+=" selclass";
     this.myDirlabel.className+=" selclass";
     lisel=this;
+    selSample.dir=this.myDir;
+    selSample.file=this.innerHTML.trim();
+    selSample.fstatus=this.fstatus;
     //TODO: update some tag here with the selected file path
   }
 }
@@ -196,38 +210,20 @@ function xhrRun(cgiurl, cgiparams, listener, args) {
 }
 
 function onRunStart() {
+  //we shouldn't get here unless the "Run" button was enabled
   if (confirm("Are you sure, Start running ?") == false) {
      return false;
   }
-  var stdiv=getObj('cmdStatus');
-  if (stdiv) {
-   stdiv.style.backgroundColor="#FDD";
-   stdiv.textContent="..Arming the system..     ";
-   stdiv.style.backgroundImage="url('css/loading.gif')";
-  }
-
-  xhrRun("cgi/run.pl?cmd=arm", xhrLogShow, [ "evLog" ]);
+  var params={"cmd":"run", "d":selSample.dir, "f":selSample.file};
+  if (selSample.pair) params["p"]=selSample.pair;
+  xhrRun("cgi/mbio.pl", params, xhrRunSample, [ "evLog" ]);
 
   return false;
 }
 
-function alarmLogStatus() {
- window.logID="evLog";
- window.logCGI="cgi/run.pl";
- xhrRun("cgi/al.pl", {}, xhrLogShow, [ "evLog" ]);
-}
-
-function mbioStatus() {
- window.logID="evLog";
- window.logCGI="cgi/run.pl";
- xhrRun("cgi/al.pl", {}, xhrLogShow, [ "evLog" ]);
-}
-
-
+/*
 function updateAlStatus(res) {
   var stdiv=getObj('alStatus');
-  //var dbgdiv=getObj('debug');
-  //dbgdiv.textContent='debug here yo';
   if (stdiv) {
     var lines=res.split("\n");
     var firstLine=lines[0];
@@ -249,7 +245,7 @@ function updateAlStatus(res) {
     }
   }
 }
-
+*/
 function urlenc(v) {
  var r=escape(v).replace(/\+/g,"%2B");
  return r;
