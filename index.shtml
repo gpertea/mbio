@@ -1,0 +1,54 @@
+<!--#set var="Title" value="Microbiome - Kraken" -->
+<!--#set var="SubTitle" value="Microbiome analysis with Kraken"-->
+<!--#set var="NoCrumbs" value="1" -->
+<!--#set var="ExtraCSS" value="css/mbio.css" -->
+<!--#set var="ExtraJS" value="mbio.js" -->
+<!--#set var="OnLoadFunc" value="runOnPageLoad()" -->
+<!--#include virtual="iheader.shtml" -->
+<div id="mainContent">
+<!-- h1>Microbiome Kraken Analysis</h1 -->
+
+<div id="mainText" style="margin-top:36px;">
+</div> <!-- mainText -->
+<div class="filer">
+  <ul id="fflist" class="flist">
+  <!-- this is the structure being populated:
+  <li><label>Directory 1</label>
+     <ul>
+       <li>InDir1_File_with_long_very_long long file name 0000001.fastq</li>
+       <li>InDir1_File_with_long file name 0000002.fastq</li>
+       <li>InDir1_File_with_long file name 0000003.fastq</li>
+       <li>InDir1_File_with_long file name 0000004.fastq</li>
+     </ul>
+  </li>
+  <li> <label>Directory 2</label>
+     <ul>
+       <li>InDir2_File_with_long file name 0000001.fastq</li>
+       <li>InDir2_File_with_long file name 0000002.fastq</li>
+       <li>InDir2_File_with_long_very_long long file name 0000003.fastq</li>
+       <li>InDir2_File_with_long file name 0000004.fastq</li>
+     </ul>
+  </li>
+  <li> <label>Directory 3</label>
+     <ul>
+       <li>InDir3_File_with_long file name 0000001.fastq</li>
+       <li>InDir3_File_with_long file name 0000002.fastq</li>
+       <li>InDir3_File_with_long_very_long long file name 0000003.fastq</li>
+       <li>InDir3_File_with_long_very_long long file name 0000004.fastq</li>
+     </ul>
+  </li>
+  -->
+ </ul>
+</div> <!-- filer -->
+<div class="filer" style="width:50%;float:right;">
+ <pre id="debug">
+ </pre>
+</div> <!-- right side -->
+
+
+</div> <!-- end of #mainContent -->
+<!--  disabled #include virtual="ifooter.shtml" -->
+
+</body>
+</html>
+

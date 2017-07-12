@@ -1,0 +1,216 @@
+/*----- Tabs -----*/
+.pageStyle .tabs {
+    width:100%;
+    display:inline-block;
+    background: #68C;
+}
+
+ /*----- Tab Links -----*/
+ /* Clearfix */
+.pageStyle .tab-links:after {
+     display:block;
+     clear:both;
+     content:'';
+ }
+
+.pageStyle .tab-links li {
+     margin:0px 5px;
+     float:left;
+     list-style:none;
+     /* border-width:1px 1px 0; */
+
+ }
+
+.pageStyle #mainContent tt {
+  white-space: nowrap;
+  font-size:1.1em;
+  background:#FDFDFE;
+}
+
+.pageStyle .tab-links li a {
+         padding:5px 9px;
+         display:inline-block;
+         border-radius:6px 6px 0 0;
+         background:#dde0e2;
+         border: 0px solid #eef0f2;
+         border-width:0 1px 0 1px;
+         font-size:16px;
+         font-weight:600;
+         color:#4c4c4c;
+         /* transition:all linear 0.15s; */
+}
+
+.pageStyle #mainContent a:hover {
+         /* background:#a7cce5;*/
+         background: #fff;
+         text-decoration: underline;
+}
+
+.pageStyle .tab-links li.active a {
+     background:#fff;
+     color:#4c4c4c;
+     border-radius:6px 6px 0 0;
+     border: 0px solid #eaecef;
+     border-width:0 1px 0 1px;
+ }
+
+ /*----- Content of Tabs -----*/
+.pageStyle .tab-content {
+     padding:10px;
+     border-radius:5px;
+     border:1px solid #f6f6f8;
+     border-top:0px;
+     box-shadow:1px 1px 1px rgba(0,0,0,0.2);
+     background:#fff;
+ }
+
+.pageStyle .tab {
+         display:none;
+}
+
+.pageStyle .tab li {
+  padding-bottom: 4px;
+}
+.pageStyle .tab.active {
+         display:block;
+}
+
+.pageStyle .boxed {
+ padding:4px 4px;
+ /* border: 1px solid #aaa; 
+ box-shadow:1px 1px 1px rgba(0,0,0,0.2);
+ background:#f0f0f0;*/
+}
+
+
+.pageStyle #mainContent .stDiv {
+ width: auto;
+ padding:0.1em 1.5em;
+ font-size: 1.3em;
+ /* border: 1px solid #aaa;*/
+ border-width: 0px;
+ background-color: #4f4;
+ background-repeat: no-repeat;
+ background-position: right center;
+ display:inline-block;
+}
+
+.pageStyle #mainContent .stDbg {
+  display:inline-block;
+  border: 2px solid gray;
+  padding:0.1em 1.5em;
+  font-size: 1.3em;
+  width: 100px;
+}
+
+.pageStyle #mainContent .logDiv {
+ white-space: pre;
+ overflow: auto;
+ font-family: monospace;
+ font-size: 1.3em;
+ border: 1px solid #aaa;
+ background:#f6f6f6;
+ max-height: 35.2em;
+ 
+ box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+}
+
+.logDiv .fault {
+  background:#fdd;
+}
+
+.logDiv .ready {
+  background:#dfd;
+}
+
+.pageStyle li.arrow {
+ list-style-type:none;
+ /* list-style-image: url(bullet-arrow-right.png); */
+ padding: 0 0 6px;
+ margin: 0;
+}
+
+.pageStyle #mainContent h5 {
+ font:bold 120% arial,sans-serif;
+ background: none;
+}
+
+.pageStyle #mainContent #stnews  {
+ padding: 0;
+}
+/* ---- Dir/File navigation ---- */
+.pageStyle #mainContent div.filer {
+    width: 50%;
+    height: 100%;
+    padding:4px;
+    display: inline-block;
+    /* border: 1px solid green; */
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.pageStyle #mainContent ul.flist {
+    background-color: #e2e2e2;
+    list-style-type: none;
+    color: #222;
+    margin:0px;
+    padding:0px;
+    cursor: pointer;
+    height:  100%;
+    width:   auto;
+    border: none;
+    overflow:auto;
+    text-align: left;
+}
+
+.pageStyle #mainContent ul.flist ul {
+  list-style-type: none;
+  margin-left:6px;
+  padding-left:6px;
+}
+
+.pageStyle #mainContent ul.flist li, 
+.pageStyle #mainContent ul.flist li ul li {
+  white-space: nowrap;
+}
+
+.pageStyle #mainContent ul.flist li ul li {
+   padding-left: 20px;
+   height:1.7em;
+   background-position: left center;
+   background-repeat: no-repeat;
+}
+
+.pageStyle #mainContent ul.flist li.active, 
+.pageStyle #mainContent ul.flist label:hover {
+   background-color: #eef;
+}
+
+.pageStyle #mainContent ul.flist li li.active, 
+.pageStyle #mainContent ul.flist li li:hover {
+   background-color: #eef;
+}
+
+.pageStyle #mainContent .selclass {
+  background-color: #ffff80;
+  color:#333;
+}
+
+.pageStyle #mainContent ul.flist li {
+  margin: 0 auto;
+}
+
+.pageStyle #mainContent ul.flist li label {
+   /* display: block; */
+   margin: 0 auto;
+   white-space: nowrap;
+   padding-right: 4px;
+   padding-left: 16px;
+   background-image: url("/mbio/css/img/r_arr.png");
+   background-position: left center;
+   background-repeat: no-repeat;
+}
+
+.pageStyle #mainContent ul.flist ul {
+  display:none;
+}
