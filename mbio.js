@@ -4,22 +4,24 @@ var flist;
 var lidirs;
 var lisel;
 var pre;
+//list of running samples (to be populated by loadFList and perhaps shown at the top of the page?)
+var srunning=[]; 
 
 //-- called by window.onLoad() ---//
 function runOnPageLoad() {
  pre=document.getElementById("debug");
  flist = document.getElementById("fflist");
- if (!flist) return;
- var li=document.createElement("LI");
- li.appendChild(document.createTextNode("..loading.."));
- flist.appendChild(li);
- //lidirs = flist.getElementsByTagName("li");
- //if (!lidirs) return;
- //send the request to populate the file list
- xhrRun("cgi/mbio.pl?cmd=flist", refreshFList, [])
+ refreshFList();
 }
 
 function refreshFList() {
+  if (!flist) return;
+  flist.innerHTML='<li style="text-align:center;">..loading..</li>';
+  //send the request to populate the file list
+  xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
+}
+
+function loadFList() {
   ftxt=this.responseText;
   //flist is set from the beginning
   lidirs=populateFlist(ftxt); //parse file list from ftxt
@@ -94,36 +96,6 @@ function populateFlist(txt) {
   }
   return dirs;
 }
-/*
-function populateFlist(ulf) {
-  var dli=document.createElement("LI");
-  var dname=document.createElement("LABEL");
-  dname.appendChild(document.createTextNode("Directory 1"));
-  dli.appendChild(dname);
-  ulf.appendChild(dli);
-  var dul=document.createElement("UL");
-  dli.appendChild(dul);
-  var files=["InDir1_File_with_long_very_long long file name 0000001.fastq",
-     "InDir1_File_with_long file name 0000002.fastq",
-     "InDir1_File_with_long file name 0000003.fastq",
-     "InDir1_File_with_long file name 0000004.fastq",
-     "InDir1_File_with_long file name 0000005.fastq" ];
-  for (i=0; i<files.length; i++) {
-    var fli=document.createElement("LI");
-    fli.appendChild(document.createTextNode(files[i]));
-    if (i==0) { //pretend this is a "RUNNING" entry
-      fli.style.backgroundImage='url("/mbio/css/img/st_run.png")';
-    }
-    if (i==2) { //pretend this is a "Problem" entry
-      fli.style.backgroundImage='url("/mbio/css/img/st_err.png")';
-    }
-    if (i==4) { //pretend this is a "Done" entry
-      fli.style.backgroundImage='url("/mbio/css/img/st_done.png")';
-    }
-    dul.appendChild(fli);
-  }
-}
-*/
 
 function folderClick() {
  if (this.targetLst) {
@@ -152,12 +124,15 @@ function fileClick() {
     //TODO: update some tag here with the selected file path
   }
 }
-
+/*
 function autoLogRefresh() {
   if (window.logID && window.logCGI) {
-    xhrRun(window.logCGI, xhrLogShow, [ window.logID ]);
+    var params={}
+    if (window.logParams) params=window.logParams;
+    xhrRun(window.logCGI, params, xhrLogShow, [ window.logID ]);
   }
 }
+*/
 
 function showFlag(v) {
   var d=getObj('divDbg');
@@ -197,18 +172,27 @@ function newXHReq() {
 }
 
 
-function xhrRun(cgiurl, listener, args) {
+function xhrRun(cgiurl, cgiparams, listener, args) {
   var rflag='running_'+getFuncName(listener);
-  //showFlag(rflag);
   if (window[rflag]) return; //prevent reentrance
-  //var xhr = new XMLHttpRequest();
   var xhr = newXHReq();
+  if (!xhr) { alert("Sorry, no XHR possible!"); return; }
   xhr.args=args;
-  xhr.addEventListener("load", listener);
+  cgiparams["nocache"]=new Date();
+  var params=[];
+  Object.keys(cgiparams).forEach(function (key) {
+    params.push(key+"="+cgiparams[key]);
+  });
+  //xhr.addEventListener("load", listener);
   window[rflag]=1; //global to prevent reentrance
-  xhr.open("GET", cgiurl);
+  xhr.open("POST", cgiurl, true);
+  xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   //showFlag(rflag);
-  xhr.send();
+  xhr.onload = function() {
+        listener.bind(xhr)(args);
+        window[rflag]=0;
+     }
+  xhr.send(params.join("&"));
 }
 
 function onRunStart() {
@@ -230,13 +214,13 @@ function onRunStart() {
 function alarmLogStatus() {
  window.logID="evLog";
  window.logCGI="cgi/run.pl";
- xhrRun("cgi/al.pl", xhrLogShow, [ "evLog" ]);
+ xhrRun("cgi/al.pl", {}, xhrLogShow, [ "evLog" ]);
 }
 
 function mbioStatus() {
  window.logID="evLog";
  window.logCGI="cgi/run.pl";
- xhrRun("cgi/al.pl", xhrLogShow, [ "evLog" ]);
+ xhrRun("cgi/al.pl", {}, xhrLogShow, [ "evLog" ]);
 }
 
 
@@ -301,6 +285,6 @@ function xhrLogShow() {
 function logRefresh(cgiurl, tID) {
   window.logID=tID;
   window.logCGI=cgiurl;
-  xhrRun(cgiurl, xhrLogShow, [ tID ]);
+  xhrRun(cgiurl, {}, xhrLogShow, [ tID ]);
 }
 

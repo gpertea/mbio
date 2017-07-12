@@ -10,14 +10,17 @@ html, body {
  padding: 0;
 }
 
-body {
+body.pageStyle {
  color: #333;
  background: #FFF;
  text-align: center;
  font: .8em Verdana, Arial, sans-serif; 
  line-height: 1.6em; 
- margin:0 auto;
- width:95%;
+ position:absolute;
+ top:0px;
+ bottom:0px;
+ left:16px;
+ right:16px;
 }
 
 .pageStyle a { color: #0066B3; background: none; text-decoration: none }
@@ -36,51 +39,11 @@ body {
 .pageStyle #header {
 	height:137px;
 	width:100%;
-	/*margin-left:24px;
-	margin-right:24px;*/
 	min-width:768px;
-/*	position:absolute;
-	top:0px;
-	left:0px;*/
 	padding: 0;
 }
 
-.pageStyle #mainContent {
-	/*position:absolute;
-    margin-top:137px;   
-    margin-bottom:64px;
-    top:0px;
-    left:24px;
-    right:24px;
-    bottom:0px;
-    */
-	min-width:768px;
-	width: 100%;
-	text-align: left;
-	color: #666;
-	z-index:500;
-	/* background: #ffff00 left top repeat-x url("img/hdshadow.png"); */
-	overflow: auto;
-	/* background-color:transparent;*/
-    background-color: #ffff00;
-	position: relative;
-	z-index:1;
-
-}
-
 .pageStyle #iheader {
-	position:relative;
-	min-width:768px;
-	overflow:visible;
-	padding:0;
-	margin: 0 auto;
-	height: 94px;
-	z-index:2;
-	text-align: left; /* this overrides the text-align: center on the body element. */
-	background:#FFF url("img/ihdr2_xfill_l.png") repeat-x; 
-}
-
-.pageStyle #iheader74 {
 	position:relative;
 	min-width:768px;
 	overflow:visible;
@@ -90,15 +53,6 @@ body {
 	z-index:2;
 	text-align: left; /* this overrides the text-align: center on the body element. */
 	background:#FFF url("img/ihdr_r_xfill.png") repeat-x; 
-}
-
-.pageStyle .hdrimg {
-	margin: 0;
-	padding: 0;
-	display: inline-block;
-	line-height:72px;
-	text-align: left;
-	vertical-align: middle;	
 }
 
 .pageStyle .hdrtitle {
@@ -113,6 +67,35 @@ body {
 	overflow:visible;
 	z-index:3000;
 }
+
+.pageStyle #mainContent {
+	min-width:768px;
+	min-height:400px;
+	width: 100%;
+	text-align: left;
+	color: #333;
+	/* background: #ffff00 left top repeat-x url("img/hdshadow.png"); */
+	overflow: auto;
+	/* background-color:transparent;*/
+	/* position: relative; */
+    position:absolute;
+    top:74px;
+    bottom:14px;
+    display: -webkit-flex; /* for Safari */
+    display: flex;
+    -webkit-align-items: stretch;
+    align-items: stretch;
+}
+
+.pageStyle .hdrimg {
+	margin: 0;
+	padding: 0;
+	display: inline-block;
+	line-height:72px;
+	text-align: left;
+	vertical-align: middle;	
+}
+
 .pageStyle .hdrtitle h1 {
 	margin: 0 0 0 6px;
 	padding: 8px 2px;

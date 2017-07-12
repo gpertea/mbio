@@ -35,51 +35,6 @@
 <!--#endif-->
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="stylesheet" href="css/layout.css" type="text/css" />
-  <style type="text/css" media="screen">
-     /*
-	 .pageStyle #mainContent {
-	    background: none;
-	    background-color:transparent;
-			position: relative;
-			z-index:1;
-       }
-       */
-		 .pageStyle #mainContent h3 {
-			 padding-top:2px;
-			 margin-top:4px;
-		 }
-		.pageStyle #mainContent h2 {
-			 padding-top:2px;
-			 margin-top:4px;
-		 }
-
-	</style>
-	  <!--[if lt IE 7]>
-     <style type="text/css" media="screen">
-	   .pageStyle #mainContent {
-	     /* border-top: 1px solid #FFF; 
-	     background: none;
-	     background-color:#FFFFFF; */	 
-	     float:left;
-	     clear:both;
-	    }
-	   .pageStyle #mainContent h4 { 
-	     background: #FFFFFF left center no-repeat url("css/img/h4bg_nt.png"); 
-	     }	 
-	 	 .pageStyle hr {
-	     position:absolute;
-       border-top:2px solid #9AF;
-	     margin:2px 0;
-	     }
-     </style>
-	<![endif]-->
-	<!--[if lte IE 7]>
-     <style type="text/css" media="screen">
-		   .pageStyle {
-	       margin-top: expression(( 72 - this.height ) / 2); 
-	       }
-     </style>
-	<![endif]-->
 <!--#if expr="-n v('ExtraCSS')" -->
      <link rel="stylesheet" href="<!--#echo var='ExtraCSS'-->" type="text/css" />
 <!--#endif -->
@@ -88,52 +43,51 @@
 <body class="pageStyle">
 
 <div id="header" style="height:74px;z-index:1;">
-<div id="iheader74">
-  <!-- div id="ihdr_r74" -->
-  <img class="topright" src="img/ihdr_ccblogo_r.png" usemap="#ccblogomap"/>
-  <!--#if expr="-n v('AddLogo')"-->
+ <div id="iheader">
+  <img class="topright" src="img/ihdr_ccblogo_r.png" usemap="#ccblogomap" />
+   <!--#if expr="-n v('AddLogo')"-->
     <img class="topright" src="<!--#echo var='AddLogo'-->" />
-  <!--#endif-->
-<map name="ccblogomap">
-  <area shape="rect" coords="0,0,224,64" href="/" alt="CCB">
-</map>
-<div class="hdrtitle">
-<!--#if expr="-n v('ImgTitle')" -->
- <div style="line-height:68px; padding:0 8px;float:left;">
-   <img class="hdrimg" src="<!--#echo var='ImgTitle'-->" />
- </div>
-<!--#endif -->
+   <!--#endif-->
+  <map name="ccblogomap">
+   <area shape="rect" coords="0,0,224,64" href="/" alt="CCB">
+  </map>
+  <div class="hdrtitle">
+  <!--#if expr="-n v('ImgTitle')" -->
+   <div style="line-height:68px; padding:0 8px;float:left;">
+    <img class="hdrimg" src="<!--#echo var='ImgTitle'-->" />
+   </div>
+  <!--#endif -->
 
-<!--#if expr="-n v('SubTitle')" -->
- <!-- assume Title is defined as well -->
- <h2>
-	<!--#if expr="-n v('Title')" -->
-	 <!--#echo var="Title"-->
-	 <!--#else -->
-	 JHU CCB - Center for Computational Biology
-	<!--#endif -->
- </h2>
- <h3><!--#echo var="SubTitle"--></h3>
-<!--#else -->
-   <!-- no subtitle, we can center the title -->
-	 <!--#if expr="-n v('titleCrumbs')" -->
-	   <!--#if expr="!$HideTitle" -->
-	     <!--#include virtual="/titleCrumbs.php?title" -->
-		 <!--#endif -->
-	 <!--#else -->
-	  <!--#if expr="-z v('HideTitle')" -->
-		<h1>
-		 <!--#if expr="-n v('Title')" -->
-			<!--#echo var="Title"-->
-			<!--#else -->
-			JHU CCB - Center for Computational Biology
-		 <!--#endif -->
-		</h1>
+  <!--#if expr="-n v('SubTitle')" -->
+   <!-- assume Title is defined as well -->
+   <h2>
+	  <!--#if expr="-n v('Title')" -->
+	   <!--#echo var="Title"-->
+	   <!--#else -->
+	   JHU CCB - Center for Computational Biology
 	  <!--#endif -->
-	 <!--#endif -->
-<!--#endif-->
-</div> <!-- hdrtitle -->
-</div> <!-- end #iheader74 -->
+   </h2>
+   <h3><!--#echo var="SubTitle"--></h3>
+  <!--#else -->
+     <!-- no subtitle, we can center the title -->
+	   <!--#if expr="-n v('titleCrumbs')" -->
+	     <!--#if expr="!$HideTitle" -->
+	       <!--#include virtual="/titleCrumbs.php?title" -->
+		   <!--#endif -->
+	   <!--#else -->
+	    <!--#if expr="-z v('HideTitle')" -->
+		  <h1>
+		   <!--#if expr="-n v('Title')" -->
+			  <!--#echo var="Title"-->
+			  <!--#else -->
+			  JHU CCB - Center for Computational Biology
+		   <!--#endif -->
+		  </h1>
+	    <!--#endif -->
+	   <!--#endif -->
+  <!--#endif-->
+  </div> <!-- end .hdrtitle -->
+ </div> <!-- end #iheader -->
 </div> <!-- end #header -->
 
 <!-- the mainContent div should follow here -->
