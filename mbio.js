@@ -4,9 +4,16 @@ var flist;
 var lidirs;
 var lisel;
 var pre;
-var selSample={}; // .dir=selected dir .file=select file name, .pair=paired file name .fstatus=running status
-//list of samples running on server (to be populated by loadFList and perhaps shown at the top of the page?)
-var srunning=[]; 
+var selSample={}; /* sampleInfo structure:
+        .dir = selected dir 
+        .file = select file name 
+        .pair = paired file name
+        .rstatus = running status ('r', '!', '.' or undefined)
+        .rdate = start date for rstatus 'r', end date for status '.'
+     */
+
+//list of samples currently running on server (to be populated by loadFList and perhaps shown at the top of the page?)
+var cRunning=[]; //list of sampleInfo structure -- samples currently running
 
 //-- called by window.onLoad() ---//
 function runOnPageLoad() {
@@ -15,9 +22,23 @@ function runOnPageLoad() {
  refreshFList();
 }
 
+//sampleInfo - file info, also running info
+function sampleInfo(vdir, vfile, vpair, vstatus, vdate) {
+ this.dir=vdir;
+ this.file=vfile;
+ this.pair=vpair;
+ this.rstatus=vstatus;
+ this.rdate=vdate;
+ 
+}
+
 function refreshFList() {
   if (!flist) return;
   flist.innerHTML='<li style="text-align:center;">..loading..</li>';
+  selSample={};
+  cRunning=[];
+  lisel=undefined;
+  pre.innerHTML="";
   //send the request to populate the file list
   xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
 }
@@ -26,38 +47,41 @@ function loadFList() {
   ftxt=this.responseText;
   //flist is set from the beginning
   lidirs=populateFlist(ftxt); //parse file list from ftxt
-  //now update the element properties
-  /*
-  for (var i = 0; i < lidirs.length; i++) {
-    var labels=lidirs[i].getElementsByTagName("label");
-    //assign a handler to all labels
-    for (var l=0; l < labels.length; l++) {
-      var dir=labels[l].innerHTML;
-      var ul=labels[l].nextElementSibling;
-      while (ul.nodeName != "UL") {
-         ul=ul.nextElementSibling();
-      }
-      if (ul) {
-        labels[l].targetLst=ul;
-        labels[l].addEventListener("click", folderClick);
-        for (var j=0;j < ul.childNodes.length;j++) {
-          var li=ul.childNodes[j];
-          if (li.nodeName == "LI") {
-             li.myDir=dir.trim();
-             li.myDirlabel=labels[l];
-             li.addEventListener("click", fileClick);
-          }
-        }
-      }
-    }
+  //also refresh the "Currently running" box
+  refreshRunning();
+}
+
+function refreshRunning() {
+  var rdiv=document.getElementById("runningStatus");
+  var rlist=document.getElementById("runningList");
+  var rmsg=document.getElementById("rMsg");
+  rlist.innerHTML="";
+  if (cRunning.length > 0) {
+     rmsg.innerHTML="Currently running:";
+     for (var i=0;i<cRunning.length;i++) {
+       var dli=document.createElement("LI");
+       dli.appendChild(document.createTextNode(cRunning[i].dir));
+       dli.appendChild(document.createElement("br"));
+       dli.appendChild(document.createTextNode('\u00A0\u00A0'+cRunning[i].file));
+       if (cRunning[i].rdate) {
+        var dt=document.createElement("I");
+        dt.appendChild(document.createTextNode('\u00A0\u00A0 ['+cRunning[i].rdate+"]"));
+        dli.appendChild(dt);
+       }
+       rlist.appendChild(dli);
+       dli.myData=cRunning[i];
+       dli.addEventListener("click", fileClick);
+     }
   }
-  */
+  else {
+   rmsg.innerHTML="No samples currently running.\n";
+  }
 }
 
 function populateFlist(txt) {
   //clear the list first 
   flist.innerHTML="";
-  dirs=[];
+  var dirs=[];
   //parse txt having the format:
   // >dir
   // file1\tstatus_char
@@ -85,20 +109,24 @@ function populateFlist(txt) {
      } else {
        //files:
        var fdata=tlines[l].split('\t');
-       var fstatus;
-       if (fdata.length>1) { fstatus=fdata[1]; }
+       var fstatus=undefined;
+       var rdate=undefined
+       if (fdata.length>1) { fstatus=fdata[1]; 
+         if (fdata.length>2) rdate=fdata[2];
+       }
        var fli=document.createElement("LI");
        fli.appendChild(document.createTextNode(fdata[0]));
        dul.appendChild(fli);
-       fli.myDir=dir;
        fli.myDirlabel=dlabel;
+       fli.myData=new sampleInfo(dir, fdata[0], '', fstatus, rdate);
        fli.addEventListener("click", fileClick);
-       fli.fstatus=fstatus;
        if (fstatus) {
           if (fstatus=='!') {
              fli.style.backgroundImage='url("/mbio/css/img/st_err.png")';
           } else if (fstatus=='r') {
              fli.style.backgroundImage='url("/mbio/css/img/st_run.png")';
+             var rs=new sampleInfo(dir, fdata[0], "", fstatus, rdate);
+             cRunning.push(rs);
           } else if (fstatus=='.') {
              fli.style.backgroundImage='url("/mbio/css/img/st_done.png")';
           }
@@ -121,21 +149,20 @@ function folderClick() {
 }
 
 function fileClick() {
-  if (this.myDir) {
-    lidirs.myDir=this.myDir;
-    lidirs.myFile=this.innerHTML.trim();
-    pre.innerText=lidirs.myDir + "\\\n  " + lidirs.myFile + "\n";
-    if (lisel) {
+  if (this.myData) {
+    //lidirs.myDir=this.myDir;
+    //lidirs.myFile=this.innerHTML.trim();
+    pre.innerText=this.myData.dir + "\\\n  " + this.myData.file + "\n";
+    if (lisel) { 
        lisel.className=lisel.className.replace(/\bselclass\b/,'');
-       lisel.myDirlabel.className=lisel.myDirlabel.className.replace(/\bselclass\b/,'');
+       if (lisel.myDirlabel)
+         lisel.myDirlabel.className=lisel.myDirlabel.className.replace(/\bselclass\b/,'');
     }
     this.className+=" selclass";
-    this.myDirlabel.className+=" selclass";
+    if (this.myDirlabel)
+      this.myDirlabel.className+=" selclass";
     lisel=this;
-    selSample.dir=this.myDir;
-    selSample.file=this.innerHTML.trim();
-    selSample.fstatus=this.fstatus;
-    //TODO: update some tag here with the selected file path
+    selSample=this.myData;
   }
 }
 /*

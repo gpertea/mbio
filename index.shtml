@@ -6,10 +6,6 @@
 <!--#set var="OnLoadFunc" value="runOnPageLoad()" -->
 <!--#include virtual="iheader.shtml" -->
 <div id="mainContent">
-<!-- h1>Microbiome Kraken Analysis</h1 -->
-
-<!-- div id="mainText" style="margin-top:36px;">
-</div-->
 <div class="filer">
   <div style="text-align:center;height:2em;position:relative;">
     <button style="position:absolute;left:4px;" onclick="refreshFList()"> Refresh </button>
@@ -45,11 +41,16 @@
  </ul>
 </div> <!-- filer -->
 <div class="filer" style="width:50%;float:right;">
+  <div id="runningStatus">
+    <b id="rMsg">Currently running:</b>
+    <ul id="runningList" >
+     <li> 3EMGDNA032217_S3_L001_R1_001.fastq.gz started on 12/12/1999 14:52</li>
+     <li> 3EMGDNA032212_S3_L001_R1_001.fastq.gz started on 12/12/1999 14:53</li>
+    </ul>
+  </div>
  <pre id="debug">
  </pre>
-</div> <!-- right side -->
-
-
+</div> <!-- right side box -->
 </div> <!-- end of #mainContent -->
 <!--  disabled #include virtual="ifooter.shtml" -->
 

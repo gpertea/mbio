@@ -36,8 +36,13 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
        while(<STAT>) {
          chomp;
          my @fs=split(/\t/);
-         if (@fs>1) {
-            $fstatus{$fs[0]}=$fs[1];
+         if (@fs>1) { #status code present ('r', '.' or '!')
+            my $finfo=$fs[1];
+            $finfo.="\t".$fs[2] if $fs[2]; #append date, if there
+            $fstatus{$fs[0]}=$finfo;
+            ##TODO: if ($fs[1] eq 'r') we should have a $fs[0].pid file somewhere
+            ## and the PID in there *should* be of an actual running process on lion
+            ## if not, this code should become '!' (error)
          }
       }
     }
@@ -47,7 +52,7 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
       next if m/^\./ || m/\.(done|xml|status)$/; #skip hidden or other non-fastq files
       my $ft=$fstatus{$_};
       print $_;
-      print "\t$ft" if $ft;
+      print "\t$ft" if $ft; #could be status + date
       print "\n";
     }
     closedir($sdh);

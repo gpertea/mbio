@@ -111,7 +111,6 @@
  border: 1px solid #aaa;
  background:#f6f6f6;
  max-height: 35.2em;
- 
  box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
 }
 
@@ -138,16 +137,52 @@
 .pageStyle #mainContent #stnews  {
  padding: 0;
 }
+
+.pageStyle #mainContent .hbox {
+  background-color: #afa;
+  display:table-row;
+  height:0px;
+}
+
+.pageStyle #mainContent #runningStatus {
+  border: 2px solid green;
+  background-color: #e2e2e2;
+  padding-left:3px;
+  width: 96%;
+}
+
+.pageStyle #mainContent ul#runningList {
+  max-height: 320px;
+  padding-left:1em;
+  margin:1px 2px 3px;
+  overflow:auto;
+  text-align: left;
+}
+
+.pageStyle #mainContent ul#runningList li {
+  padding:3px 0px;
+  line-height: 1em;
+  cursor: pointer;
+}
+
+.pageStyle #mainContent ul#runningList li.active, 
+.pageStyle #mainContent ul#runningList li:hover {
+   background-color: #eef;
+}
+
+.pageStyle #mainContent .selInfo {
+ 
+}
+
 /* ---- Dir/File navigation ---- */
 .pageStyle #mainContent .filer {
+    display: inline-block;
+    position:relative;
     width: 50%;
+    padding:4px;
     -webkit-flex: 1;
     -ms-flex: 1;
     flex:1;
-    padding:4px;
-    display: inline-block;
-    position:relative;
-    /* border: 1px solid green; */
 }
 
 .pageStyle #mainContent ul.flist {
@@ -157,9 +192,9 @@
     top:2.1em;
     left:4px;
     right:4px;
-    bottom:4px; /* can make room for some local footer here */
+    bottom:4px;
     background-color: #e2e2e2;
-    list-style-type: none;
+    /* list-style-type: none; */
     -webkit-flex: 1;
     -ms-flex: 1;
     flex:1;
