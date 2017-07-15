@@ -3,6 +3,10 @@
 var flist;
 var lidirs;
 var lisel;
+var runningDiv;
+var runningMsg;
+var runningUL;
+
 var pre;
 var selSample={}; /* sampleInfo structure:
         .dir = selected dir 
@@ -19,6 +23,9 @@ var cRunning=[]; //list of sampleInfo structure -- samples currently running
 function runOnPageLoad() {
  pre=document.getElementById("debug");
  flist = document.getElementById("fflist");
+ runningDiv=document.getElementById("runningStatus");
+ runningMsg=document.getElementById("rMsg");
+ runningUL=document.getElementById("runningList");
  refreshFList();
 }
 
@@ -38,6 +45,9 @@ function refreshFList() {
   selSample={};
   cRunning=[];
   lisel=undefined;
+  runningMsg.innerHTML="..loading info..";
+  runningUL.innerHTML="";
+  
   pre.innerHTML="";
   //send the request to populate the file list
   xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
@@ -52,12 +62,11 @@ function loadFList() {
 }
 
 function refreshRunning() {
-  var rdiv=document.getElementById("runningStatus");
-  var rlist=document.getElementById("runningList");
-  var rmsg=document.getElementById("rMsg");
-  rlist.innerHTML="";
   if (cRunning.length > 0) {
-     rmsg.innerHTML="Currently running:";
+     var rmsg="Currently running "+cRunning.length;
+     if (cRunning.length>1) rmsg+=" samples:";
+        else rmsg+=" sample:";
+     runningMsg.innerHTML=rmsg;
      for (var i=0;i<cRunning.length;i++) {
        var dli=document.createElement("LI");
        dli.appendChild(document.createTextNode(cRunning[i].dir));
@@ -65,16 +74,16 @@ function refreshRunning() {
        dli.appendChild(document.createTextNode('\u00A0\u00A0'+cRunning[i].file));
        if (cRunning[i].rdate) {
         var dt=document.createElement("I");
-        dt.appendChild(document.createTextNode('\u00A0\u00A0 ['+cRunning[i].rdate+"]"));
+        dt.appendChild(document.createTextNode('\u00A0 ['+cRunning[i].rdate+"]"));
         dli.appendChild(dt);
        }
-       rlist.appendChild(dli);
+       runningUL.appendChild(dli);
        dli.myData=cRunning[i];
        dli.addEventListener("click", fileClick);
      }
   }
   else {
-   rmsg.innerHTML="No samples currently running.\n";
+   runningMsg.innerHTML="No samples currently running.\n";
   }
 }
 
