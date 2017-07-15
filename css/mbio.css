@@ -170,8 +170,70 @@
    background-color: #eef;
 }
 
-.pageStyle #mainContent .selInfo {
- 
+.pageStyle #mainContent .divBox {
+  position:relative;
+  /* width: 97%; */
+  margin: 0 auto;
+  margin-top:1.2em;
+  padding-top:1px;
+  /* border: 1px solid blue; */
+  background-color: transparent;
+  padding-left:3px;
+}
+
+.pageStyle #mainContent #selInfo {
+  /* width: 97%; */
+  margin: 0 auto;
+  margin-top:1.1em;
+  padding-top:0.4em;
+  border: 1px solid #ec4;
+  background-color: #f0f0e4;
+  padding-left:3px;
+}
+
+.pageStyle #mainContent div#selFpath {
+  font-weight: bold;
+  background-color: #ffffed;
+  padding:4px;
+  white-space: nowrap;
+  overflow:auto;
+}
+
+.pageStyle #mainContent #selInfo label {
+  font-style: italic;
+  display: inline-block;
+  background-color: transparent;
+  padding:2px;
+}
+
+.pageStyle #mainContent #selInfo #fstatus {
+  display: inline-block;
+  padding:2px;
+  padding-left: 20px;
+  font-weight: bold;
+  background-color: transparent;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.pageStyle #mainContent #selInfo #rdate {
+  display: inline-block;
+  padding:2px;
+  padding-left: 40px;
+  background-color: transparent;
+}
+
+
+.pageStyle #mainContent .divTitle{
+  position:absolute;
+  top:0;
+  left:0.6em;
+  font-size:90%;
+  font-style: italic;
+  padding:0.06em 0.2em;
+  background-color: #f0f0e4;
+  border: 1px solid #ec4;
+  z-index:20;
 }
 
 /* ---- Dir/File navigation ---- */

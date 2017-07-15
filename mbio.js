@@ -6,26 +6,32 @@ var lisel;
 var runningDiv;
 var runningMsg;
 var runningUL;
-
-var pre;
-var selSample={}; /* sampleInfo structure:
+var selSample={}; /* currently selected sample, sampleInfo structure:
         .dir = selected dir 
         .file = select file name 
         .pair = paired file name
         .rstatus = running status ('r', '!', '.' or undefined)
         .rdate = start date for rstatus 'r', end date for status '.'
      */
+//selInfo GUI elements:
+var selFpath; //select file path div
+var selFstatus;
+var selRdate;
+var selPaired; //"paired" checkbox
+var selAction; //action button: "run", "stop" or "Re-run"
 
 //list of samples currently running on server (to be populated by loadFList and perhaps shown at the top of the page?)
 var cRunning=[]; //list of sampleInfo structure -- samples currently running
 
 //-- called by window.onLoad() ---//
 function runOnPageLoad() {
- pre=document.getElementById("debug");
  flist = document.getElementById("fflist");
  runningDiv=document.getElementById("runningStatus");
  runningMsg=document.getElementById("rMsg");
  runningUL=document.getElementById("runningList");
+ selFpath=document.getElementById("selFpath");
+ selFstatus=document.getElementById("fstatus");
+ selRdate=document.getElementById("rdate");
  refreshFList();
 }
 
@@ -47,8 +53,10 @@ function refreshFList() {
   lisel=undefined;
   runningMsg.innerHTML="..loading info..";
   runningUL.innerHTML="";
-  
-  pre.innerHTML="";
+  selFstatus.innerHTML="";
+  selFstatus.style.backgroundImage="none";
+  selFpath.innerHTML="";
+  selRdate.innerHTML="";
   //send the request to populate the file list
   xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
 }
@@ -157,11 +165,32 @@ function folderClick() {
  }
 }
 
+
+function showSel(sel) {
+   selFpath.innerHTML=sel.dir + "<br/>\u00A0\u00A0 " + sel.file;
+   selFstatus.innerHTML="";
+   selFstatus.style.backgroundImage="none";
+   selRdate.innerHTML="";
+   if (sel.rstatus) {
+      if (sel.rstatus=='!') {
+         selFstatus.innerHTML="problem";
+         selFstatus.style.backgroundImage='url("/mbio/css/img/st_err.png")';
+      } else if (sel.rstatus=='r') {
+         selFstatus.innerHTML="running";
+         selFstatus.style.backgroundImage='url("/mbio/css/img/st_run.png")';
+      } else if (sel.rstatus=='.') {
+         selFstatus.innerHTML="processed";
+         selFstatus.style.backgroundImage='url("/mbio/css/img/st_done.png")';
+      }
+   }
+  if (sel.rdate) {
+    selRdate.innerHTML="[since "+sel.rdate+"]";
+  }
+}
+
 function fileClick() {
   if (this.myData) {
-    //lidirs.myDir=this.myDir;
-    //lidirs.myFile=this.innerHTML.trim();
-    pre.innerText=this.myData.dir + "\\\n  " + this.myData.file + "\n";
+    showSel(this.myData);
     if (lisel) { 
        lisel.className=lisel.className.replace(/\bselclass\b/,'');
        if (lisel.myDirlabel)

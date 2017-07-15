@@ -48,8 +48,15 @@
      <li> 3EMGDNA032212_S3_L001_R1_001.fastq.gz started on 12/12/1999 14:53</li>
     </ul>
   </div>
- <pre id="debug">
- </pre>
+  <div class="divBox">
+    <div class="divTitle">Selected sample</div>
+    <div id="selInfo">
+      <div id="selFpath">
+      </div>
+      <label>Status:</label>
+      <div id="fstatus"> </div><div id="rdate"> </div>
+    </div>
+   </div>
 </div> <!-- right side box -->
 </div> <!-- end of #mainContent -->
 <!--  disabled #include virtual="ifooter.shtml" -->
