@@ -223,7 +223,18 @@
   background-color: transparent;
 }
 
+.pageStyle #mainContent #selInfo #selBDiv {
+  position:relative;
+  text-align:center;
+  padding:0.3em 0.3em;
+  border-top:1px solid #aaa;
+  margin: 0 auto;
+}
 
+.pageStyle #mainContent #selInfo #selBDiv button {
+  padding:0.3em 0.5em;
+  
+}
 .pageStyle #mainContent .divTitle{
   position:absolute;
   top:0;

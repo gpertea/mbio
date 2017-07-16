@@ -53,8 +53,12 @@
     <div id="selInfo">
       <div id="selFpath">
       </div>
-      <label>Status:</label>
-      <div id="fstatus"> </div><div id="rdate"> </div>
+      <div id="selStDiv">
+       <label>Status:</label><div id="fstatus"></div><div id="rdate"></div>
+       <div id="selBDiv">
+        <button id="btnAction"> Run </button>
+       </div>
+     </div>
     </div>
    </div>
 </div> <!-- right side box -->

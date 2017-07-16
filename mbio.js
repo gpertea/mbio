@@ -15,6 +15,7 @@ var selSample={}; /* currently selected sample, sampleInfo structure:
      */
 //selInfo GUI elements:
 var selFpath; //select file path div
+var selStDiv; //status, date, action div group
 var selFstatus;
 var selRdate;
 var selPaired; //"paired" checkbox
@@ -32,6 +33,7 @@ function runOnPageLoad() {
  selFpath=document.getElementById("selFpath");
  selFstatus=document.getElementById("fstatus");
  selRdate=document.getElementById("rdate");
+ selStDiv=document.getElementById("selStDiv");
  refreshFList();
 }
 
@@ -57,6 +59,7 @@ function refreshFList() {
   selFstatus.style.backgroundImage="none";
   selFpath.innerHTML="";
   selRdate.innerHTML="";
+  selStDiv.style.display="none";
   //send the request to populate the file list
   xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
 }
@@ -165,12 +168,12 @@ function folderClick() {
  }
 }
 
-
 function showSel(sel) {
    selFpath.innerHTML=sel.dir + "<br/>\u00A0\u00A0 " + sel.file;
    selFstatus.innerHTML="";
    selFstatus.style.backgroundImage="none";
    selRdate.innerHTML="";
+   selStDiv.style.display="block";
    if (sel.rstatus) {
       if (sel.rstatus=='!') {
          selFstatus.innerHTML="problem";
