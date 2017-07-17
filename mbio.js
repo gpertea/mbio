@@ -24,7 +24,7 @@ var selPairFname; //pair file name <label>
 
 var selAction; //action button: "run", "stop" or "Re-run"
 var selResults; //"See Results" button
-
+var pre; //debug pre
 //list of samples currently running on server (to be populated by loadFList and perhaps shown at the top of the page?)
 var cRunning=[]; //list of sampleInfo structure -- samples currently running
 
@@ -43,6 +43,7 @@ function runOnPageLoad() {
  selPairInfo=document.getElementById("selPairInfo");
  selPairCheck=document.getElementById("selPairCheck");
  selPairFname=document.getElementById("selPairFname");
+ pre=document.getElementById("debug");
  refreshFList();
 }
 
@@ -168,6 +169,7 @@ function populateFlist(txt) {
           }
        }
        fli.myData=new sampleInfo(dir, fdata[0], '', fstatus, rdate);
+       //
        fli.addEventListener("click", fileClick);
        prevli=fli;
        if (fstatus) {
@@ -198,6 +200,34 @@ function folderClick() {
  }
 }
 
+
+function runStarted() {
+  //debug only
+  pre.innerHTML=this.responseText;
+}
+
+function onRunClick() {
+  if (!selSample || !selSample.file) return;
+  //we shouldn't get here unless the "Run" button was enabled
+  if (confirm("Are you sure, start processing this sample ?") == false) {
+     return false;
+  }
+
+  var params={};
+  params.cmd='rget';
+  params.dir=selSample.dir;
+  params.file=selSample.file;
+  if (selPairCheck.checked && selSample.pair)
+     params.pair=selSample.pair;
+  xhrRun("cgi/mbio.pl",params, runStarted, []);
+}
+
+function onCancelClick() {
+  if (confirm("Are you sure, cancel the processing on this sample?") == false) {
+     return false;
+  }
+}
+
 function showSel(sel, selp) {
    selFpath.innerHTML=sel.dir + "<br/>\u00A0\u00A0 " + sel.file;
    selFstatus.innerHTML="&mdash;";
@@ -205,6 +235,7 @@ function showSel(sel, selp) {
    selRdate.innerHTML="";
    selStDiv.style.display="block";
    selAction.firstChild.data="Run analysis";
+   selAction.onclick=onRunClick;
    selResults.style.display="none";
    if (sel.rstatus) {
       if (sel.rstatus=='!') {
@@ -215,6 +246,7 @@ function showSel(sel, selp) {
          selFstatus.innerHTML="running";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_run.png")';
          selAction.firstChild.data="Cancel this run";
+         selAction.onclick=onCancelClick;
       } else if (sel.rstatus=='.') {
          selFstatus.innerHTML="processed";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_done.png")';
@@ -254,6 +286,9 @@ function fileClick() {
       this.myDirlabel.className+=" selclass";
     lisel=this;
     selSample=this.myData;
+    //TOCHECK: this is populated here but NOT necessarily used
+    //unless selPairCheck.checked
+    if (pairdata) selSample.pair=pairdata.file;
   }
 }
 /*
@@ -328,11 +363,7 @@ function xhrRun(cgiurl, cgiparams, listener, args) {
 }
 
 function onRunStart() {
-  //we shouldn't get here unless the "Run" button was enabled
-  if (confirm("Are you sure, Start running ?") == false) {
-     return false;
-  }
-  var params={"cmd":"run", "d":selSample.dir, "f":selSample.file};
+  var params={"cmd":"rget", "d":selSample.dir, "f":selSample.file};
   if (selSample.pair) params["p"]=selSample.pair;
   xhrRun("cgi/mbio.pl", params, xhrRunSample, [ "evLog" ]);
 

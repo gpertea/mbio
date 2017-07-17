@@ -68,6 +68,9 @@ my @r = map { $qparams{$_} } @k;
 return wantarray() ? @r : $r[0]; 
 }
 
+sub get_qrystr() {
+ return $qrystr;
+}
 
 =head2 cgi_start([<option> => 'strvalue', ..])
  

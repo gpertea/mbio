@@ -66,6 +66,10 @@
      </div>
     </div>
    </div>
+   <div class="divBox">
+   <pre id="debug">
+   </pre>
+   </div>
 </div> <!-- right side box -->
 </div> <!-- end of #mainContent -->
 <!--  disabled #include virtual="ifooter.shtml" -->
