@@ -32,7 +32,7 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
     next unless -d "$mdir/$d";
     print ">$d\n";
     my %fstatus;
-    if (open(STAT, "$mdir/$d/.status")) {
+    if (open(STAT, "$mdir/$d/.www-status")) {
        while(<STAT>) {
          chomp;
          my @fs=split(/\t/);
@@ -49,7 +49,7 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
     opendir(my $sdh, "$mdir/$d") || die("Error opening sample dir $mdir/$d");
     
     foreach (sort readdir($sdh)) {
-      next if m/^\./ || m/\.(done|xml|status)$/; #skip hidden or other non-fastq files
+      next if m/^\./ || m/(done|xml|status|kraken)$/; #skip hidden or other non-fastq files
       my $ft=$fstatus{$_};
       print $_;
       print "\t$ft" if $ft; #could be status + date
@@ -62,12 +62,11 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
   exit(0);
 }
 # run a script on lion (kraken, etc.)
-# scripts on lion should update the .status file in that directory
+# scripts on lion should update the .www-status file in that directory
 if ($cmd eq 'run') {
   my $ftarget=cgi_param('ftarget');
   #this should contain a file path relative to $mdir (dir/file)
   my $fpair=cgi_param('fpair'); #if set, should be the file
      #name of the paired file (no path at all, same path with ftarget assumed
-  
   exit(0);
 }
