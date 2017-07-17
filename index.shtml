@@ -54,9 +54,14 @@
       <div id="selFpath">
       </div>
       <div id="selStDiv">
+       <div id="selPairInfo">
+         <input id="selPairCheck" type="checkbox">Paired:<br/>
+        <label id="selPairFname">change the text here!</label>
+       </div>
        <label>Status:</label><div id="fstatus"></div><div id="rdate"></div>
        <div id="selBDiv">
         <button id="btnAction"> Run </button>
+        <button id="btnResults"> View Results </button>
        </div>
      </div>
     </div>

@@ -18,8 +18,12 @@ var selFpath; //select file path div
 var selStDiv; //status, date, action div group
 var selFstatus;
 var selRdate;
-var selPaired; //"paired" checkbox
+var selPairInfo;  //div group with pair info
+var selPairCheck; //"paired" checkbox
+var selPairFname; //pair file name <label>
+
 var selAction; //action button: "run", "stop" or "Re-run"
+var selResults; //"See Results" button
 
 //list of samples currently running on server (to be populated by loadFList and perhaps shown at the top of the page?)
 var cRunning=[]; //list of sampleInfo structure -- samples currently running
@@ -34,6 +38,11 @@ function runOnPageLoad() {
  selFstatus=document.getElementById("fstatus");
  selRdate=document.getElementById("rdate");
  selStDiv=document.getElementById("selStDiv");
+ selAction=document.getElementById("btnAction");
+ selResults=document.getElementById("btnResults");
+ selPairInfo=document.getElementById("selPairInfo");
+ selPairCheck=document.getElementById("selPairCheck");
+ selPairFname=document.getElementById("selPairFname");
  refreshFList();
 }
 
@@ -44,7 +53,6 @@ function sampleInfo(vdir, vfile, vpair, vstatus, vdate) {
  this.pair=vpair;
  this.rstatus=vstatus;
  this.rdate=vdate;
- 
 }
 
 function refreshFList() {
@@ -60,6 +68,7 @@ function refreshFList() {
   selFpath.innerHTML="";
   selRdate.innerHTML="";
   selStDiv.style.display="none";
+  selPairInfo.style.display="none";
   //send the request to populate the file list
   xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
 }
@@ -98,6 +107,17 @@ function refreshRunning() {
   }
 }
 
+function canPair(a, b) {
+ //check 2 file names to see if they can form a pair
+ //a is the first file name encountered, when sorted alphabetically 
+ if (a.length!=b.length) return false;
+ var ri=a.indexOf("_R1_");
+ if (a<1) return false;
+ var ap=a.slice(0,ri)+"_R2_"+a.slice(ri+4);
+ if (ap === b) return true;
+ return false;
+}
+
 function populateFlist(txt) {
   //clear the list first 
   flist.innerHTML="";
@@ -112,6 +132,7 @@ function populateFlist(txt) {
   var dlabel;
   var dir;
   var dul;
+  var prevli; //previous LI item object (could be a pair?)
   for (var l=0;l<tlines.length;l++) {
     if (tlines[l].charAt(0)=='>') {
        //directories
@@ -126,6 +147,7 @@ function populateFlist(txt) {
        dli.appendChild(dul);
        dlabel.addEventListener("click", folderClick);
        dlabel.targetLst=dul;
+       prevli=undefined;
      } else {
        //files:
        var fdata=tlines[l].split('\t');
@@ -138,8 +160,16 @@ function populateFlist(txt) {
        fli.appendChild(document.createTextNode(fdata[0]));
        dul.appendChild(fli);
        fli.myDirlabel=dlabel;
+       if (prevli && prevli.myData) {
+          //determine if previous list item was a pair
+          if (canPair(prevli.myData.file, fdata[0])) {
+             fli.myPair=prevli;
+             prevli.myPair=fli;
+          }
+       }
        fli.myData=new sampleInfo(dir, fdata[0], '', fstatus, rdate);
        fli.addEventListener("click", fileClick);
+       prevli=fli;
        if (fstatus) {
           if (fstatus=='!') {
              fli.style.backgroundImage='url("/mbio/css/img/st_err.png")';
@@ -168,24 +198,42 @@ function folderClick() {
  }
 }
 
-function showSel(sel) {
+function showSel(sel, selp) {
    selFpath.innerHTML=sel.dir + "<br/>\u00A0\u00A0 " + sel.file;
-   selFstatus.innerHTML="";
+   selFstatus.innerHTML="&mdash;";
    selFstatus.style.backgroundImage="none";
    selRdate.innerHTML="";
    selStDiv.style.display="block";
+   selAction.firstChild.data="Run analysis";
+   selResults.style.display="none";
    if (sel.rstatus) {
       if (sel.rstatus=='!') {
          selFstatus.innerHTML="problem";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_err.png")';
+         selAction.firstChild.data="Run - Start over";
       } else if (sel.rstatus=='r') {
          selFstatus.innerHTML="running";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_run.png")';
+         selAction.firstChild.data="Cancel this run";
       } else if (sel.rstatus=='.') {
          selFstatus.innerHTML="processed";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_done.png")';
+         selAction.firstChild.data="Run again";
+         selResults.style.display="inline";
       }
-   }
+  }
+  if (selp && sel.rstatus!='r') { //for now, don't care about pairing for running samples
+    //ideally, for samples running with their pair, the checkbox should be automatically checked
+    //but disabled (so the user cannot change it)
+    selPairInfo.style.display="block";
+    selPairFname.innerHTML="\u00A0\u00A0 "+selp.file;
+    selPairCheck.checked=false;
+  }
+    else {
+     selPairInfo.style.display="none";
+     selPairFname.innerHTML="";
+     selPairCheck.checked=false;
+  }
   if (sel.rdate) {
     selRdate.innerHTML="[since "+sel.rdate+"]";
   }
@@ -193,11 +241,13 @@ function showSel(sel) {
 
 function fileClick() {
   if (this.myData) {
-    showSel(this.myData);
-    if (lisel) { 
-       lisel.className=lisel.className.replace(/\bselclass\b/,'');
-       if (lisel.myDirlabel)
-         lisel.myDirlabel.className=lisel.myDirlabel.className.replace(/\bselclass\b/,'');
+    var pairdata=this.myPair;
+    if (pairdata) pairdata=pairdata.myData;
+    showSel(this.myData, pairdata);
+    if (lisel) {
+      lisel.className=lisel.className.replace(/\bselclass\b/,'');
+      if (lisel.myDirlabel)
+        lisel.myDirlabel.className=lisel.myDirlabel.className.replace(/\bselclass\b/,'');
     }
     this.className+=" selclass";
     if (this.myDirlabel)
