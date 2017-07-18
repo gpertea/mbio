@@ -13,6 +13,8 @@ use minicgi;
 $|=1;
 
 my $mdir='/lion/scratch0/pathology/fastq-files';
+my $outdir='/lion/scratch0/pathology/www-out';
+my $ssh_scriptdir='/scratch0/pathology/www-scripts';
 my $cmd=cgi_param('cmd');
 
 #send responses back as plain text for javascript to parse
@@ -23,6 +25,43 @@ if (!$cmd) {
   print "No command has been issued!\n";
   #cgi_end(); #not needed for text output
   exit(0);
+}
+
+#### run a script or command on lion through SSH
+####   cmd=run  : will start the process on lion in background and exit
+####   cmd=rget : will send a command through ssh and wait for it to finish
+##                returning stdout content
+if ($cmd eq 'run' || $cmd eq 'rget') {
+  my $dir=cgi_param('dir');
+  my $file=cgi_param('file');
+  #this should contain a file path relative to $mdir (dir/file)
+  my $pair=cgi_param('pair'); #if set, should be the file
+  my $host='gpertea@lion.welch.jhu.edu';
+
+  my $ssh = Net::OpenSSH->new($host);
+  $ssh->error and
+    die "Couldn't establish SSH connection: ". $ssh->error;
+  if ($cmd eq 'rget') { #special SSH execution:
+     ## wait for the command to finish, return stdout
+     print STDERR "Params=(".join(', ', $dir, $file, $pair).")\n";
+     my @ls = $ssh->capture("ls -l /scratch0/pathology");
+     $ssh->error and
+       die "remote ls command failed: " . $ssh->error;
+     #my ($out, $err) = $ssh->capture2("find /root");
+     #$ssh->error and
+     #  die "remote find command failed: " . $ssh->error;
+     print STDOUT join("", @ls)."\n";
+     exit(0);
+  }
+  else { #start running of real job
+     #start a job in background and return immediately
+     # (using setsid to disconnect the background process)
+     # this should also update the .www-status file 
+     # in the corresponding directory
+     $ssh->system("setsid $ssh_scriptdir/run.sh '$dir' '$file' '$pair' > $ssh_scriptdir/run.sh.log 2>&1 &");
+     sleep(3); #give time for status to be updated
+     $cmd='flist';
+  }
 }
 
 if ($cmd eq 'status' || $cmd eq 'flist') {
@@ -63,37 +102,16 @@ if ($cmd eq 'status' || $cmd eq 'flist') {
   exit(0);
 }
 
-
-#### run a script or command on lion through SSH
-####   cmd=run  : will start the process on lion in background and exit
-####   cmd=rget : will send a command through ssh and wait for it to finish
-##                returning stdout content
-if ($cmd eq 'run' || $cmd eq 'rget') {
+if ($cmd eq 'showlog') {
   my $dir=cgi_param('dir');
   my $file=cgi_param('file');
-  #this should contain a file path relative to $mdir (dir/file)
-  my $pair=cgi_param('pair'); #if set, should be the file
-  my $host='gpertea@lion.welch.jhu.edu';
-  my $ssh = Net::OpenSSH->new($host);
-  $ssh->error and
-    die "Couldn't establish SSH connection: ". $ssh->error;
-  if ($cmd eq 'rget') { #special SSH execution:
-     ## wait for the command to finish, return stdout
-     print STDERR "Params=(".join(', ', $dir, $file, $pair).")\n";
-     my @ls = $ssh->capture("ls -l /scratch0/pathology");
-     $ssh->error and
-       die "remote ls command failed: " . $ssh->error;
-     #my ($out, $err) = $ssh->capture2("find /root");
-     #$ssh->error and
-     #  die "remote find command failed: " . $ssh->error;
-     print STDOUT join("", @ls)."\n";
-  }
-  else { #start running of real job
-     #start a job in background and return immediately
-     # (using setsid to disconnect the background process)
-     # this should also update the .www-status file 
-     # in the corresponding directory
-     
+  #this must be the same as in the run.sh file:
+  my $logFile="$outdir/$dir/$file.runlog";
+  if ($dir && $file && -f $logFile && open(RLOG, $logFile)) {
+     while (<RLOG>) {
+      print STDOUT $_;
+     }
+     close(RLOG);
   }
   exit(0);
 }

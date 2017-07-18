@@ -56,7 +56,7 @@ function sampleInfo(vdir, vfile, vpair, vstatus, vdate) {
  this.rdate=vdate;
 }
 
-function refreshFList() {
+function refreshFList(params) {
   if (!flist) return;
   flist.innerHTML='<li style="text-align:center;">..loading..</li>';
   selSample={};
@@ -71,7 +71,11 @@ function refreshFList() {
   selStDiv.style.display="none";
   selPairInfo.style.display="none";
   //send the request to populate the file list
-  xhrRun("cgi/mbio.pl",{ "cmd":"flist" }, loadFList, []);
+  if (!params || params.cmd!="run") {
+    //for now, only the RUN command can override this
+    params = { "cmd":"flist" }; 
+  }
+  xhrRun("cgi/mbio.pl", params, loadFList, []);
 }
 
 function loadFList() {
@@ -200,9 +204,8 @@ function folderClick() {
  }
 }
 
-
-function runStarted() {
-  //debug only
+function debugText() {
+  //this is rather for debug purposes
   pre.innerHTML=this.responseText;
 }
 
@@ -212,20 +215,29 @@ function onRunClick() {
   if (confirm("Are you sure, start processing this sample ?") == false) {
      return false;
   }
-
   var params={};
-  params.cmd='rget';
+  params.cmd='run';
   params.dir=selSample.dir;
   params.file=selSample.file;
   if (selPairCheck.checked && selSample.pair)
      params.pair=selSample.pair;
-  xhrRun("cgi/mbio.pl",params, runStarted, []);
+  refreshFList(params);
 }
 
 function onCancelClick() {
   if (confirm("Are you sure, cancel the processing on this sample?") == false) {
      return false;
   }
+}
+
+function onResultsClick() {
+ //for now this simply shows the stderr+stdout log file for fqtrim & run.sh (see run.sh for details)
+ if (!selSample) return;
+ var params={};
+ params.cmd="showlog";
+ params.dir=selSample.dir;
+ params.file=selSample.file;
+ xhrRun("cgi/mbio.pl", params, debugText, []);
 }
 
 function showSel(sel, selp) {
@@ -237,6 +249,7 @@ function showSel(sel, selp) {
    selAction.firstChild.data="Run analysis";
    selAction.onclick=onRunClick;
    selResults.style.display="none";
+   pre.innerHTML="";
    if (sel.rstatus) {
       if (sel.rstatus=='!') {
          selFstatus.innerHTML="problem";
@@ -252,6 +265,7 @@ function showSel(sel, selp) {
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_done.png")';
          selAction.firstChild.data="Run again";
          selResults.style.display="inline";
+         selResults.onclick=onResultsClick;
       }
   }
   if (selp && sel.rstatus!='r') { //for now, don't care about pairing for running samples
@@ -362,39 +376,6 @@ function xhrRun(cgiurl, cgiparams, listener, args) {
   xhr.send(params.join("&"));
 }
 
-function onRunStart() {
-  var params={"cmd":"rget", "d":selSample.dir, "f":selSample.file};
-  if (selSample.pair) params["p"]=selSample.pair;
-  xhrRun("cgi/mbio.pl", params, xhrRunSample, [ "evLog" ]);
-
-  return false;
-}
-
-/*
-function updateAlStatus(res) {
-  var stdiv=getObj('alStatus');
-  if (stdiv) {
-    var lines=res.split("\n");
-    var firstLine=lines[0];
-    //dbgdiv.textContent=lines[0];
-    stdiv.style.backgroundImage="none";
-    if (firstLine.indexOf('Ready') > 0) {
-       stdiv.textContent='Ready to Arm System';
-       stdiv.style.backgroundColor="#6F6";
-    }
-    else {
-      if (firstLine.indexOf('ARMED') > 0 ) {
-        stdiv.textContent='ARMED!';
-        stdiv.style.backgroundColor="#FCC";
-      }
-      else {
-        stdiv.textContent='Cannot arm now';
-        stdiv.style.backgroundColor="#FCC";
-       }
-    }
-  }
-}
-*/
 function urlenc(v) {
  var r=escape(v).replace(/\+/g,"%2B");
  return r;

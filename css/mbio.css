@@ -172,8 +172,8 @@
 
 .pageStyle #mainContent .divBox {
   position:relative;
-  /* width: 97%; */
-  margin: 0 auto;
+  width: 98%;
+  /* margin: 0 auto; */
   margin-top:1.2em;
   padding-top:1px;
   /* border: 1px solid blue; */
@@ -252,6 +252,15 @@
   padding: 0.3em 0.5em;
   margin: 0.2em 0.5em;
 }
+.pageStyle #mainContent .divBox #debug {
+  overflow:auto;
+  position:absolute;
+  top:2px;
+  left:2px;
+  bottom:2px;
+  right:2px;
+}
+
 .pageStyle #mainContent .divTitle{
   position:absolute;
   top:0;

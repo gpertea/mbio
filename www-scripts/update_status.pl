@@ -4,10 +4,16 @@ use strict;
 my $pre='/scratch0/pathology/fastq-files';
 
 my $statfile='.www-status';
-my $usage = q{Usage:
-  update_status.pl <file_path>
-  <file_path> is relative to $pre.
+my $usage = q{ Update the .www-status file in the given directory.
+Usage:
+  update_status.pl <dir> <fname>[ <status> <run_date> <fpair>]
+  
+  <dir> is relative to $pre
+  <status> can be 'r', '!' or '.'
+  <run_date> should be 'MM/DD/YYYY HH:MM' format, or 'now'
+  
 };
+
 umask 0002;
 my $dir=shift(@ARGV); #relative to $pre
 die("$usage Error: no target directory specified") unless $dir;
@@ -27,8 +33,10 @@ die("Error: file $pre/$dir/$file not found!\n") unless -f "$pre/$dir/$file";
 my @flist; #file entries already in the status file
 my %fdata; #existing file data
 my $isUpdate; #if the file already in status file, this is an update
-
-if (open(my $fh, "$pre/$dir/$statfile")) {
+my $updateExisting=(-f "$pre/$dir/$statfile");
+if ($updateExisting) {
+  open(my $fh, "$pre/$dir/$statfile") 
+    || die("Error opening $pre/$dir/$statfile for reading!\n");
   flock($fh, LOCK_SH);
   while(<$fh>) {
     chomp;
@@ -59,10 +67,18 @@ push(@wd, $fdate) if $fdate || $fpair;
 push(@wd, $fpair) if $fpair;
 $fdata{$file}=join("\t", @wd);
 ## file locking so we don't have 2 processes writing at the same time
-open(my $wh, "+<$pre/$dir/$statfile") || die ("Error opening for write: $pre/$dir/$statfile\n");
+my $wh;
+if ($updateExisting) {
+  open($wh, "+<$pre/$dir/$statfile") || die ("Error opening for write: $pre/$dir/$statfile\n");
+}
+else {
+  open($wh, ">$pre/$dir/$statfile") || die ("Error creating: $pre/$dir/$statfile\n");
+}
 flock($wh, LOCK_EX);
-#lock acquired, now we can truncate/rewrite the file
-seek($wh, 0, 0); truncate($wh, 0);
+if ($updateExisting) {
+  #lock acquired, now we can finally truncate/rewrite the whole file
+  seek($wh, 0, 0); truncate($wh, 0);
+}
 foreach my $fname (@flist) {
   my $fd=$fdata{$fname};
   print $wh "$fname\t$fd\n";
