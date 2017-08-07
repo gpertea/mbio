@@ -115,3 +115,22 @@ if ($cmd eq 'showlog') {
   }
   exit(0);
 }
+
+## Display Kraken report 
+if ($cmd eq 'showKreport') {
+  my $dir=cgi_param('dir');
+  my $file=cgi_param('file');
+  #this must be the same as in the run.sh file:
+  my $KreportFile="$outdir/$dir/$file.kraken_out.report";
+  ## maybe print a informative message ( what is the name of the report file and for what samples a fost rulat?
+  if ($dir && $file && -f $KreportFile && open(RRPT, $KreportFile)) {
+     print STDOUT "kraken-report results:\n\n"; ## for $file (and its pair if any) :\n\n";
+     print STDOUT `grep -w -A1 "classified" $outdir/$dir/$file.runlog` , "\n";
+     print STDOUT "$dir/$file.kraken_out.report\n\n";
+     while (<RRPT>) {
+      print STDOUT $_;
+     }
+     close(RRPT);
+  }
+  exit(0);
+}

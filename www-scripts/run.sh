@@ -42,15 +42,21 @@ if [[ -n $pname ]]; then
    exit 1
  fi
 fi
-## in this example we are running fqtrim on the given fastq files
+## in this example we are running kraken on the given fastq files
+## $KRAKEN --threads $treads --db $DB --paired $1 $2
 ## this script is currently single-task oriented, so the process ID
 ## will be written into: $pre/$fname.pid
 ## (in the future this could be expanded to include the job name, 
 ## e.g. a fqtrim job could write $pre/$fpath.fqtrim.pid
 
+threads=10
+KRAKEN="/scratch0/pathology/sw/kraken/install/kraken"
+DB="/scratch0/genomes/krakendbs/krakendb-2016-01-13_all"
+KrakenOutputFile="$outpre/$dir/${fname}.kraken_out"  # or "$outpre/$dir/${fname%_R1_001.fastq.gz}.kraken_out"
+
 fparams="$dir/$fname"
 if [[ -n $pname ]]; then
- fparams="$dir/$fname,$dir/$pname"
+ fparams="--paired $dir/$fname $dir/$pname"
 fi
 pidFile="$dir/$fname.pid"
 logFile="$outpre/$dir/$fname.runlog"
@@ -59,13 +65,32 @@ exec > $logFile 2>&1
 
 ### job starting, update the status to 'r' (running)
 $scripts/update_status.pl $dir $fname r now $pname
+
 if [[ $? -ne 0 ]]; then
  echo "Error updating running status!"
  exit 1
 fi
 ### store the process ID
 echo $$ > $pidFile
-fqtrim --outdir="$outpre/$dir" -V -o trim.fq.gz -r "$outpre/$dir/$fname.fqtrim.report" $fparams
+#fqtrim --outdir="$outpre/$dir" -V -o trim.fq.gz -r "$outpre/$dir/$fname.fqtrim.report" $fparams
+
+# /scratch0/pathology/sw/kraken/install/kraken --output /scratch0/pathology/www-out/032217/2EMGcDNA032217_S8_L001_R1_001.fastq.gz.kraken_out --threads 10 --db /scratch0/genomes/krakendbs/krakendb-2016-01-13_all --paired 032217/2EMGcDNA032217_S8_L001_R1_001.fastq.gz 032217/2EMGcDNA032217_S8_L001_R2_001.fastq.gz
+# then Kraken REPORT:
+# /scratch0/pathology/sw/kraken/install/kraken-report --db /scratch0/genomes/krakendbs/krakendb-2016-01-13_all /scratch0/pathology/www-out/032217/2EMGcDNA032217_S8_L001_R1_001 >/scratch0/pathology/www-out/032217/2EMGcDNA032217_S8_L001_R1_001.fastq.gz.kraken_out.report
+
+echo "running Kraken for $fparams"
+echo "------------------"
+
+$KRAKEN --output $KrakenOutputFile --threads "$threads" --db $DB $fparams
+
+wait
+
+echo "----------------------------------------------------------"
+echo "running Kraken-report for $KrakenOutputFile"
+echo "----------------------------------------------------------"
+
+"${KRAKEN}-report" --db $DB $KrakenOutputFile > "${KrakenOutputFile}.report"
+ 
 runstatus=$?
 rm $pidFile
 rstatus='.'

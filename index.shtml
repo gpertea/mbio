@@ -62,6 +62,10 @@
        <div id="selBDiv">
         <button id="btnAction"> Run </button>
         <button id="btnResults"> View Results </button>
+        <!--CA-->
+	<button id="btnLog"> View Log </button>
+	<button id="btnDnld"> Download </button>
+	
        </div>
      </div>
     </div>

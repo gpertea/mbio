@@ -24,6 +24,8 @@ var selPairFname; //pair file name <label>
 
 var selAction; //action button: "run", "stop" or "Re-run"
 var selResults; //"See Results" button
+var selLog; //"See Log" button when status is "!" = problem
+var selDnld
 var pre; //debug pre
 //list of samples currently running on server (to be populated by loadFList and perhaps shown at the top of the page?)
 var cRunning=[]; //list of sampleInfo structure -- samples currently running
@@ -40,6 +42,9 @@ function runOnPageLoad() {
  selStDiv=document.getElementById("selStDiv");
  selAction=document.getElementById("btnAction");
  selResults=document.getElementById("btnResults");
+ selLog=document.getElementById("btnLog"); //trebuie??
+ selDnld=document.getElementById("btnDnld"); //
+
  selPairInfo=document.getElementById("selPairInfo");
  selPairCheck=document.getElementById("selPairCheck");
  selPairFname=document.getElementById("selPairFname");
@@ -232,6 +237,19 @@ function onCancelClick() {
 
 function onResultsClick() {
  //for now this simply shows the stderr+stdout log file for fqtrim & run.sh (see run.sh for details)
+ //CA: modified to show some actuall results (Kraken-report file). maybe we shoul do a diff button for Logfile ?
+ if (!selSample) return;
+ var params={};
+ //params.cmd="showlog";
+ params.cmd="showKreport";
+ params.dir=selSample.dir;
+ params.file=selSample.file;
+ xhrRun("cgi/mbio.pl", params, debugText, []);
+}
+
+function onLogClick() {
+ //for now this simply shows the stderr+stdout log file for Kraken & run.sh (see run.sh for details)
+ //cp from onResultsClick
  if (!selSample) return;
  var params={};
  params.cmd="showlog";
@@ -239,7 +257,6 @@ function onResultsClick() {
  params.file=selSample.file;
  xhrRun("cgi/mbio.pl", params, debugText, []);
 }
-
 function showSel(sel, selp) {
    selFpath.innerHTML=sel.dir + "<br/>\u00A0\u00A0 " + sel.file;
    selFstatus.innerHTML="&mdash;";
@@ -249,12 +266,16 @@ function showSel(sel, selp) {
    selAction.firstChild.data="Run analysis";
    selAction.onclick=onRunClick;
    selResults.style.display="none";
+   selLog.style.display="none"; //CA
+   selDnld.style.display="none"; //CA
    pre.innerHTML="";
    if (sel.rstatus) {
       if (sel.rstatus=='!') {
          selFstatus.innerHTML="problem";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_err.png")';
          selAction.firstChild.data="Run - Start over";
+	 selLog.style.display="inline"; //CA
+         selLog.onclick=onLogClick;    //CA
       } else if (sel.rstatus=='r') {
          selFstatus.innerHTML="running";
          selFstatus.style.backgroundImage='url("/mbio/css/img/st_run.png")';
@@ -266,6 +287,9 @@ function showSel(sel, selp) {
          selAction.firstChild.data="Run again";
          selResults.style.display="inline";
          selResults.onclick=onResultsClick;
+	 selDnld.style.display="inline";   //CA
+         //selDnld.onclick=onDownloadClick; //CA
+
       }
   }
   if (selp && sel.rstatus!='r') { //for now, don't care about pairing for running samples
@@ -273,7 +297,7 @@ function showSel(sel, selp) {
     //but disabled (so the user cannot change it)
     selPairInfo.style.display="block";
     selPairFname.innerHTML="\u00A0\u00A0 "+selp.file;
-    selPairCheck.checked=false;
+    selPairCheck.checked=true; // CA: it was set as false intially by Geo
   }
     else {
      selPairInfo.style.display="none";

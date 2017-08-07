@@ -34,10 +34,11 @@ my @flist; #file entries already in the status file
 my %fdata; #existing file data
 my $isUpdate; #if the file already in status file, this is an update
 my $updateExisting=(-f "$pre/$dir/$statfile");
+
 if ($updateExisting) {
   open(my $fh, "$pre/$dir/$statfile") 
     || die("Error opening $pre/$dir/$statfile for reading!\n");
-  flock($fh, LOCK_SH);
+  flock($fh, LOCK_SH); # Corina says: Is this an efficent lock ? between reading and writing, the file is unlocked ..!!!
   while(<$fh>) {
     chomp;
     my @fd=split(/\t/);
@@ -66,10 +67,12 @@ $fdate='-' if $fpair && !$fdate;
 push(@wd, $fdate) if $fdate || $fpair;
 push(@wd, $fpair) if $fpair;
 $fdata{$file}=join("\t", @wd);
+
 ## file locking so we don't have 2 processes writing at the same time
+
 my $wh;
 if ($updateExisting) {
-  open($wh, "+<$pre/$dir/$statfile") || die ("Error opening for write: $pre/$dir/$statfile\n");
+  open($wh, "+<$pre/$dir/$statfile") || die ("Error opening for write/update : $pre/$dir/$statfile\n");
 }
 else {
   open($wh, ">$pre/$dir/$statfile") || die ("Error creating: $pre/$dir/$statfile\n");
