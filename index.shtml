@@ -67,10 +67,12 @@
 	<button id="btnDnld"> Download </button>
        <script>
        	$("#btnDnld").on("click", function(e){
-		e.preventDefault();
 		var form_var = $('<form></form>').attr('action', "cgi/single_sample_dnld.pl").attr('method', 'post');
-		form_var.append($("<input></input>").attr('type', 'hidden').attr('name', "raportKpath").attr('value', $("#selFpath")[0].innerText));
-		form_var.appendTo('body').submit().remove();
+		form_var.appendTo('body');
+		form_var.append($("<input></input>").attr('type', 'hidden').attr('name', "raportKpath").attr('value', $("#selFpath")[0].textContent));
+		form_var.submit();
+		form_var.remove();
+		
 	});
 	</script>
        </div>

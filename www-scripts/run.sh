@@ -90,6 +90,7 @@ echo "running Kraken-report for $KrakenOutputFile"
 echo "----------------------------------------------------------"
 
 "${KRAKEN}-report" --db $DB $KrakenOutputFile > "${KrakenOutputFile}.report"
+
  
 runstatus=$?
 rm $pidFile
@@ -99,7 +100,14 @@ if [[ $runstatus -ne 0 ]] ; then
  rstatus='!'
  ### in this case it could be useful to allow checking the www-out/$logFile 
  ### from the web interface
+else
+  echo "compressing Kraken-report for $KrakenOutputFile"
+  tar -czf "${KrakenOutputFile}.tar.gz" ${KrakenOutputFile} "${KrakenOutputFile}.report"
+  if [[ $? -ne 0 ]]; then
+    echo "Error compressing kraken output final status!"
+  fi
 fi
+
 
 ### job terminated, update the status
 $scripts/update_status.pl $dir $fname $rstatus now $pname
