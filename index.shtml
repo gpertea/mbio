@@ -71,16 +71,6 @@
 		var form_var = $('<form></form>').attr('action', "cgi/single_sample_dnld.pl").attr('method', 'post');
 		form_var.append($("<input></input>").attr('type', 'hidden').attr('name', "raportKpath").attr('value', $("#selFpath")[0].innerText));
 		form_var.appendTo('body').submit().remove();
-		/*
-		$.ajax({type: "POST",
-                	url: "cgi/single_sample_dnld.pl",
-                	data: { id: $("#selFpath").val() },
-                	success:function(result){
-          			alert(result);
-        		}}
-		);
-		*/
-		//console.log($("#selFpath")[0].innerText);
 	});
 	</script>
        </div>
