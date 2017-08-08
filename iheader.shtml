@@ -7,12 +7,13 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Script-Type" content="text/javascript" />
   <title>
-<!--#if expr="-n v('Title')" -->
+ <!--#if expr="-n v('Title')" -->
 	  <!--#echo var="Title"-->
 <!--#else -->
 	  JHU CCB - Center for Computational Biology
 <!--#endif -->
 	</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script type="text/javascript">
 	function xch(chrcode) {
 	  return String.fromCharCode(chrcode);
