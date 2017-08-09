@@ -318,10 +318,14 @@ function fileClick() {
       lisel.className=lisel.className.replace(/\bselclass\b/,'');
       if (lisel.myDirlabel)
         lisel.myDirlabel.className=lisel.myDirlabel.className.replace(/\bselclass\b/,'');
+      if (lisel.myPair) //CA - removing the highligh from the pair also
+        lisel.myPair.className=lisel.myPair.className.replace(/\bselclass\b/,'');
     }
     this.className+=" selclass";
     if (this.myDirlabel)
       this.myDirlabel.className+=" selclass";
+    this.myPair.className+=" selclass";  //CA - added so it would be clear that it has a 
+                                        //pair and the pair is also involved in Kraken run
     lisel=this;
     selSample=this.myData;
     //TOCHECK: this is populated here but NOT necessarily used

@@ -7,7 +7,7 @@ my $q = CGI->new;
 my $outdir='/lion/scratch0/pathology/www-out';
 
 my $fileinfo = $q->param('raportKpath');
-  print STDERR "fileINFO=$fileinfo\n" ;
+#  print STDERR "fileINFO=$fileinfo\n" ;
  
  $fileinfo =~ s/\R//g;
  $fileinfo =~ s/\xc2//g;
@@ -15,10 +15,10 @@ my $fileinfo = $q->param('raportKpath');
  $fileinfo =~ s/^\s+//g;$fileinfo =~ s/\s+$//g;
  
  my ($dir,$file) = split(/\s+/, $fileinfo); 
- print STDERR "dir=$dir file=$file\n" ;
+ #print STDERR "dir=$dir file=$file\n" ;
  
  my $Koutfile= "${outdir}/${dir}/${file}.kraken_out";
- print STDERR "$Koutfile\n";
+ #print STDERR "$Koutfile\n";
  
  
 my $buf_size = 4096;
@@ -28,6 +28,7 @@ my $buf_size = 4096;
 if (! -e "${Koutfile}.tar.gz") {
    system("tar -czf ${Koutfile}.tar.gz ${Koutfile} ${Koutfile}.report");
    die ("tar command failed: $!\n") if ( $? == -1 );
+   #
 }
 
 open( my $fh, '<', "${Koutfile}.tar.gz" )
